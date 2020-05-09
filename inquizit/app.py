@@ -1,10 +1,22 @@
 from aiohttp import web
 
-async def handle(request):
-	name = request.match_info.get('name', "Anonymous")
-	text = "Hello, " + name
-	return web.Response(text=text)
+from config.development import config
+from utils import mongodb
+from routes import setup_routes
 
-app = web.Application()
-app.add_routes([web.get('/', handle),
-				web.get('/{name}', handle)])
+async def init_app(argv=None):
+    app = web.Application()
+
+    app.on_startup.append(mongodb.init)
+    app.on_cleanup.append(mongodb.close)
+
+    setup_routes(app)
+
+    return app
+
+
+def main(argv):
+    app = init_app(argv)
+    web.run_app(app,
+                host=config['SERVER_HOST'],
+                port=config['SERVER_PORT'])

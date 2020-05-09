@@ -1,6 +1,8 @@
+import sys
+
 from aiohttp import web
 
-from app import app
+from app import main
 
 if __name__ == '__main__':
-	web.run_app(app)
+	main(sys.argv[1:])
