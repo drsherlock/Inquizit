@@ -9,6 +9,8 @@ verify_ssl = true
 aiohttp = "*"
 cchardet = "*"
 aiodns = "*"
+motor = "*"
+pymongo = {extras = ["srv"],version = "*"}
 
 [requires]
 python_version = "3.7"
