@@ -1,0 +1,4 @@
+__pycache__/
+
+/inquizit/config/development.py
+/inquizit/config/production.py
