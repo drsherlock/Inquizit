@@ -4,6 +4,7 @@ from config.development import config
 from utils import mongodb
 from routes import setup_routes
 
+
 async def init_app(argv=None):
     app = web.Application()
 
