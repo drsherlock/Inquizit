@@ -1,5 +1,7 @@
 from aiohttp import web
 
+from helpers import user_helper
+
 routes = web.RouteTableDef()
 
 
@@ -11,8 +13,5 @@ async def hello(request):
 
 @routes.post('/users')
 async def create(request):
-    body = await request.json()
-
-    username = body['username']
-    email = body['email']
-    return web.Response(text=username+""+email)
+    user_id = await user_helper.create_user(request)
+    return web.json_response({'userId': user_id})

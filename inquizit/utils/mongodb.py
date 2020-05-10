@@ -12,7 +12,7 @@ async def init(app):
     )
     client = motor.motor_asyncio.AsyncIOMotorClient(url)
 
-    app['mongodb'] = client
+    app['mongodb'] = client.get_default_database()
 
 
 async def close(app):
