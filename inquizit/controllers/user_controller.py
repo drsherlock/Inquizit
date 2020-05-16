@@ -13,5 +13,5 @@ async def hello(request):
 
 @routes.post('/users')
 async def create(request):
-    user_id = await user_helper.create_user(request)
-    return web.json_response({'userId': user_id})
+    response = await user_helper.create_user(request)
+    return web.json_response(response)
