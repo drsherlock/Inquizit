@@ -9,3 +9,9 @@ routes = web.RouteTableDef()
 async def create(request):
     response = await room_helper.create_room(request)
     return web.json_response(response)
+
+
+@routes.post('/rooms/join')
+async def join(request):
+    response = await room_helper.join_room(request)
+    return web.json_response(response)
