@@ -15,7 +15,7 @@ async def create_room(request):
         msg = "User with id: {} does not exist"
         return {'error': msg.format(admin_id)}
 
-    user_in_room = await has_user(admin_id, request)
+    user_in_room = await check_user_in_room(admin_id, request)
     if user_in_room:
         msg = "User with id: {} is already in a room"
         return {'error': msg.format(admin_id)}
@@ -47,7 +47,7 @@ async def join_room(request):
         msg = "User with id: {} does not exist"
         return {'error': msg.format(user_id)}
 
-    user_in_room = await has_user(user_id, request)
+    user_in_room = await check_user_in_room(user_id, request)
     if user_in_room:
         msg = "User with id: {} is already in a room"
         return {'error': msg.format(user_id)}
@@ -60,7 +60,7 @@ async def join_room(request):
     return {'updated': updated}
 
 
-async def has_user(user_id, request):
+async def check_user_in_room(user_id, request):
     query = {'users': {'$elemMatch': {
         '_id': ObjectId(user_id)}}, 'active': True}
     user = await Room.find_user_in_room(query=query,
