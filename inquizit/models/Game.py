@@ -3,6 +3,6 @@ async def insert_game(query, db):
     return result.inserted_id
 
 
-async def find_game_in_room(query, db):
+async def find_game(query, db):
     game = await db.games.find_one(query)
     return game

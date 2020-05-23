@@ -21,16 +21,14 @@ async def create_game(request):
 
     query = {'room_id': ObjectId(
         room_id), 'players': room['users'], 'active': True}
-    game_id = await Game.insert_game(query=query,
-                                     db=request.app['mongodb'])
+    game_id = await Game.insert_game(query=query, db=request.app['mongodb'])
 
     return {'gameId': str(game_id)}
 
 
 async def is_room_available(room_id, request):
     query = {'room_id': ObjectId(room_id), 'active': True}
-    game = await Game.find_game_in_room(query=query,
-                                        db=request.app['mongodb'])
+    game = await Game.find_game(query=query, db=request.app['mongodb'])
     if game is not None:
         return False
     return True
