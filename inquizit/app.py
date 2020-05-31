@@ -1,4 +1,5 @@
 from aiohttp import web
+from aiohttp_middlewares import cors_middleware
 
 from config.development import config
 from utils import mongodb
@@ -6,7 +7,9 @@ from routes import setup_routes
 
 
 async def init_app(argv=None):
-    app = web.Application()
+    app = web.Application(middlewares=(
+        cors_middleware(origins=["http://localhost:3000"]),
+    ))
 
     app['websockets'] = {}
 
