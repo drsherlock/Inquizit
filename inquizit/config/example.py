@@ -3,5 +3,8 @@ config = {
     "SERVER_PORT": "8080",
     "MONGODB_USERNAME": "username",
     "MONGODB_PASSWORD": "password",
-    "MONGODB_HOST": "host"
+    "MONGODB_HOST": "host",
+    "JWT_SECRET": "secret",
+    "JWT_ALGORITHM": "algorithm",
+    "JWT_EXP_DELTA_SECONDS": 10000
 }

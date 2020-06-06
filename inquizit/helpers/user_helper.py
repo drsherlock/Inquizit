@@ -27,4 +27,4 @@ async def create_user(request):
     else:
         user_id = user['_id']
 
-    return {'userId': str(user_id)}
+    return {'user_id': str(user_id)}

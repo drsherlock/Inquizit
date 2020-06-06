@@ -4,23 +4,25 @@ from models import Room, User
 
 
 async def create_room(request):
-    body = await request.json()
+    # body = await request.json()
+    user_id = request.user_id
+    if user_id == "":
+        msg = "Token is invalid"
+        return {'error': msg}
 
-    admin_id = body['adminId']
-
-    query = {'_id': ObjectId(admin_id)}
+    query = {'_id': ObjectId(user_id)}
     user = await User.find_user(
         query=query, db=request.app['mongodb'])
     if user is None:
         msg = "User with id: {} does not exist"
-        return {'error': msg.format(admin_id)}
+        return {'error': msg.format(user_id)}
 
-    user_in_room = await check_user_in_room(admin_id, request)
+    user_in_room = await check_user_in_room(user_id, request)
     if user_in_room:
         msg = "User with id: {} is already in a room"
-        return {'error': msg.format(admin_id)}
+        return {'error': msg.format(user_id)}
 
-    query = {'admin_id': ObjectId(admin_id), 'users': [user], 'active': True}
+    query = {'admin_id': ObjectId(user_id), 'users': [user], 'active': True}
     room_id = await Room.insert_room(query=query,
                                      db=request.app['mongodb'])
 

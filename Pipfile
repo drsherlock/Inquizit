@@ -12,6 +12,7 @@ aiodns = "*"
 motor = "*"
 pymongo = {extras = ["srv"],version = "*"}
 aiohttp-middlewares = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.7"

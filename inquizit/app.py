@@ -8,7 +8,8 @@ from routes import setup_routes
 
 async def init_app(argv=None):
     app = web.Application(middlewares=(
-        cors_middleware(origins=["http://localhost:3000"]),
+        cors_middleware(origins=["http://localhost:3000"],
+                        allow_credentials=True,),
     ))
 
     app['websockets'] = {}
