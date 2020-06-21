@@ -17,3 +17,17 @@ async def create(request):
 async def join(request):
     response = await room_helper.join_room(request)
     return web.json_response(response)
+
+
+@routes.post('/rooms/removeUser')
+@auth_middleware
+async def remove(request):
+    response = await room_helper.remove_user(request)
+    return web.json_response(response)
+
+
+@routes.get('/rooms')
+@auth_middleware
+async def find(request):
+    response = await room_helper.find_room(request)
+    return web.json_response(response)

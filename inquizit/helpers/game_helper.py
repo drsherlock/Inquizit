@@ -10,14 +10,14 @@ async def create_game(request):
 
     room_available = await is_room_available(room_id, request)
     if not room_available:
-        msg = "Room with id: {} already has a game"
-        return {'error': msg.format(room_id)}
+        msg = "Game already running in this room"
+        return {'error': msg}
 
     query = {'_id': ObjectId(room_id), 'active': True}
     room = await Room.find_room(query=query, db=request.app['mongodb'])
     if room is None:
-        msg = "Room with id: {} does not exist"
-        return {'error': msg.format(room_id)}
+        msg = "Room does not exist"
+        return {'error': msg}
 
     query = {'room_id': ObjectId(
         room_id), 'players': room['users'], 'active': True}

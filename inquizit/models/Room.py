@@ -16,3 +16,13 @@ async def find_room(query, db):
 async def add_user(filter, query, db):
     result = await db.rooms.update_one(filter, query)
     return result.modified_count > 0
+
+
+async def remove_user(filter, query, db):
+    result = await db.rooms.update_one(filter, query)
+    return result.modified_count > 0
+
+
+async def remove_room(filter, query, db):
+    result = await db.rooms.update_one(filter, query)
+    return result.modified_count > 0
