@@ -14,7 +14,7 @@ async def create(request):
     return web.json_response(response)
 
 
-@routes.get('/api/users/verify/{room_id}')
+@routes.get('/api/users/verify')
 @auth_middleware
 async def verify(request):
     response = await user_helper.verify_user(request)

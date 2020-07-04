@@ -19,7 +19,8 @@ async def create_room(request):
 
     room = await check_user_in_room(user_id, request)
     if room:
-        return {'roomId': str(room['_id']), 'inRoom': True}
+        msg = "User is in another room"
+        return {'error': msg}
 
     query = {'admin_id': ObjectId(user_id), 'users': [user], 'active': True}
     room_id = await Room.insert_room(query=query,
@@ -28,23 +29,28 @@ async def create_room(request):
     return {'roomId': str(room_id)}
 
 
-async def join_room(request):
+async def add_user(request):
+    user_id = request.user_id
+    if user_id == "":
+        msg = "Token is invalid"
+        return {'error': msg}
+
     body = await request.json()
 
-    user_id = body['userId']
     room_id = body['roomId']
+
+    query = {'_id': ObjectId(user_id)}
+    user = await User.find_user(
+        query=query, db=request.app['mongodb'])
+    if user is None:
+        msg = "User does not exist"
+        return {'error': msg}
 
     query = {'_id': ObjectId(room_id), 'active': True}
     room = await Room.find_room(
         query=query, db=request.app['mongodb'])
     if room is None:
         msg = "Room does not exist"
-        return {'error': msg}
-
-    query = {'_id': ObjectId(user_id)}
-    user = await User.find_user(query=query, db=request.app['mongodb'])
-    if user is None:
-        msg = "User does not exist"
         return {'error': msg}
 
     room = await check_user_in_room(user_id, request)

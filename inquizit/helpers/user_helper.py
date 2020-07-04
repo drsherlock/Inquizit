@@ -38,7 +38,7 @@ async def verify_user(request):
         msg = "Token is invalid"
         return {'error': msg}
 
-    room_id = request.match_info['room_id']
+    # room_id = request.match_info['room_id']
 
     query = {'_id': ObjectId(user_id)}
     user = await User.find_user(
@@ -47,15 +47,18 @@ async def verify_user(request):
         msg = "User does not exist"
         return {'error': msg}
 
-    query = {'_id': ObjectId(room_id), 'active': True}
-    room = await Room.find_room(query=query, db=request.app['mongodb'])
-    if room is None:
-        msg = "Room does not exist"
-        return {'error': msg}
+    # TODO: move this to separate request method
+    # query = {'_id': ObjectId(room_id), 'active': True}
+    # room = await Room.find_room(query=query, db=request.app['mongodb'])
+    # if room is None:
+    #     msg = "Room does not exist"
+    #     return {'error': msg}
 
-    room = await check_user_in_room(user_id, request)
-    if room_id != str(room['_id']):
-        return {'roomId': str(room['_id']), 'inRoom': True}
+    # room = await check_user_in_room(user_id, request)
+    # if not room:
+    #     return {'inRoom': False}
+    # if room_id != str(room['_id']):
+    #     return {'roomId': str(room['_id']), 'inRoom': True}
 
     return {'userId': str(user['_id']), 'username': user['username']}
 

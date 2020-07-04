@@ -36,8 +36,11 @@ async def create(request):
 
     await ws_current.send_json({'action': 'connect', 'name': user_id})
 
+    # notify current users of new user
+    print(request.app['websockets'])
     for user in room['users']:
         if str(user['_id']) in request.app['websockets']:
+            print(str(user['_id']))
             user_ws = request.app['websockets'][str(user['_id'])]
             await user_ws.send_json({'action': 'join', 'name': user_id})
 
@@ -51,6 +54,7 @@ async def create(request):
                 for user in room['users']:
                     if str(user['_id']) in request.app['websockets']:
                         user_ws = request.app['websockets'][str(user['_id'])]
+                        # forward message to all users except the sender
                         if user_ws is not ws_current:
                             await user_ws.send_json(
                                 {'action': 'sent', 'name': user_id, 'text': msg.data})

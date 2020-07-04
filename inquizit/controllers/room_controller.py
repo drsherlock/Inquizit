@@ -13,9 +13,10 @@ async def create(request):
     return web.json_response(response)
 
 
-@routes.post('/api/rooms/join')
+@routes.post('/api/rooms/addUser')
+@auth_middleware
 async def join(request):
-    response = await room_helper.join_room(request)
+    response = await room_helper.add_user(request)
     return web.json_response(response)
 
 
