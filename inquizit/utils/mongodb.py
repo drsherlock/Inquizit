@@ -16,4 +16,4 @@ async def init(app):
 
 
 async def close(app):
-    app['mongodb'].close()
+    app['mongodb'].client.close()
