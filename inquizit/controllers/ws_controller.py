@@ -22,27 +22,31 @@ async def create(request):
     query = {'_id': ObjectId(room_id), 'active': True}
     room = await Room.find_room(query=query, db=request.app['mongodb'])
 
+    # room does not exist
     if room is None:
         msg = "Room is closed, create a new room"
-        await ws_current.send_json({'action': 'error', 'name': user_id, 'msg': room_id})
+        await ws_current.send_json({'action': 'error', 'userId': user_id, 'msg': room_id})
         await ws_current.close()
         return
 
     if not any(user_id == str(user['_id']) for user in room['users']):
         msg = "You have not joined the room"
-        await ws_current.send_json({'action': 'error', 'name': user_id, 'msg': msg})
+        await ws_current.send_json({'action': 'error', 'userId': user_id, 'msg': msg})
         await ws_current.close()
         return
 
-    await ws_current.send_json({'action': 'connect', 'name': user_id})
+    users = [{'email': user['email'], 'username': user['username'], 'userId': str(
+        user['_id'])} for user in room['users']]
+    await ws_current.send_json({'action': 'connect', 'userId': user_id, 'users': users})
+
+    current_user = next({'email': user['email'], 'username': user['username'], 'userId': str(
+        user['_id'])} for user in room['users'] if user_id == str(user['_id']))
 
     # notify current users of new user
-    print(request.app['websockets'])
     for user in room['users']:
         if str(user['_id']) in request.app['websockets']:
-            print(str(user['_id']))
             user_ws = request.app['websockets'][str(user['_id'])]
-            await user_ws.send_json({'action': 'join', 'name': user_id})
+            await user_ws.send_json({'action': 'join', 'user': current_user})
 
     request.app['websockets'][user_id] = ws_current
 
@@ -57,7 +61,7 @@ async def create(request):
                         # forward message to all users except the sender
                         if user_ws is not ws_current:
                             await user_ws.send_json(
-                                {'action': 'sent', 'name': user_id, 'text': msg.data})
+                                {'action': 'sent', 'userId': user_id, 'text': msg.data})
         elif msg.type == WSMsgType.ERROR:
             print('ws connection closed with exception %s' %
                   ws_current.exception())
@@ -70,6 +74,6 @@ async def create(request):
     for user in room['users']:
         if str(user['_id']) in request.app['websockets']:
             user_ws = request.app['websockets'][str(user['_id'])]
-            await user_ws.send_json({'action': 'disconnect', 'name': user_id})
+            await user_ws.send_json({'action': 'disconnect', 'userId': user_id})
 
     return ws_current
