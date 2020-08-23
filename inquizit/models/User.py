@@ -1,9 +1,15 @@
 
 async def find_user(query, db):
-    user = await db.users.find_one(query)
-    return user
+    try:
+        user = await db.users.find_one(query)
+        return user
+    except Exception as e:
+        print(e)
 
 
 async def insert_user(query, db):
-    result = await db.users.insert_one(query)
-    return result.inserted_id
+    try:
+        result = await db.users.insert_one(query)
+        return result.inserted_id
+    except Exception as e:
+        print(e)
