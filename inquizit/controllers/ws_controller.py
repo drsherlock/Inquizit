@@ -75,7 +75,7 @@ async def create(request):
         room_filter = {'_id': ObjectId(room_id), 'active': True}
         game_filter = {'room_id': ObjectId(room_id), 'active': True}
 
-        room_helper.remove_user_from_room_and_game(
+        await room_helper.remove_user_from_room_and_game(
             room_filter, game_filter, user_id, request)
 
     for user in room['users']:
