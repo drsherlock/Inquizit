@@ -88,24 +88,13 @@ async def remove_user(request):
         msg = "Room does not exist"
         return {'error': msg}
 
-    roomFilter = {'_id': ObjectId(room_id), 'active': True}
-    gameFilter = {'room_id': ObjectId(room_id), 'active': True}
+    room_filter = {'_id': ObjectId(room_id), 'active': True}
+    game_filter = {'room_id': ObjectId(room_id), 'active': True}
     if str(room['admin_id']) == user_id:
-        query = {'$set': {'active': False}}
-        updated = await Room.remove_room(filter=roomFilter, query=query,
-                                         db=request.app['mongodb'])
-
-        updated = await Game.remove_game(filter=gameFilter, query=query,
-                                         db=request.app['mongodb'])
+        updated = await remove_room_and_game(room_filter, game_filter, request)
     else:
-        query = {'$pull': {'users': {'_id': ObjectId(user_id)}}}
-        updated = await Room.remove_user(filter=roomFilter, query=query,
-                                         db=request.app['mongodb'])
-
-        query = {'$pull': {'players': {'_id': ObjectId(user_id)}}}
-        updated = await Game.remove_player(filter=gameFilter, query=query,
-                                           db=request.app['mongodb'])
-
+        # TODO: remove player separately from game
+        updated = await remove_user_from_room_and_game(room_filter, game_filter, user_id, request)
     return {'updated': updated}
 
 
@@ -137,3 +126,26 @@ async def check_user_in_room(user_id, request):
     if room is None:
         return False
     return room
+
+
+async def remove_room_and_game(room_filter, game_filter, request):
+    query = {'$set': {'active': False}}
+    updated = await Room.remove_room(filter=room_filter, query=query,
+                                     db=request.app['mongodb'])
+
+    updated = await Game.remove_game(filter=game_filter, query=query,
+                                     db=request.app['mongodb'])
+
+    return updated
+
+
+async def remove_user_from_room_and_game(room_filter, game_filter, user_id, request):
+    query = {'$pull': {'users': {'_id': ObjectId(user_id)}}}
+    updated = await Room.remove_user(filter=room_filter, query=query,
+                                     db=request.app['mongodb'])
+
+    query = {'$pull': {'players': {'_id': ObjectId(user_id)}}}
+    updated = await Game.remove_player(filter=game_filter, query=query,
+                                       db=request.app['mongodb'])
+
+    return updated

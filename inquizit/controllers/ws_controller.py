@@ -1,6 +1,7 @@
 from aiohttp import web, WSMsgType
 from bson.objectid import ObjectId
 
+from helpers import room_helper
 from models import Room
 
 routes = web.RouteTableDef()
@@ -70,6 +71,12 @@ async def create(request):
 
     if user_id in request.app['websockets']:
         del request.app['websockets'][user_id]
+
+        room_filter = {'_id': ObjectId(room_id), 'active': True}
+        game_filter = {'room_id': ObjectId(room_id), 'active': True}
+
+        room_helper.remove_user_from_room_and_game(
+            room_filter, game_filter, user_id, request)
 
     for user in room['users']:
         if str(user['_id']) in request.app['websockets']:
